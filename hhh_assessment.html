@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HHH (H³) - SHS Strand Assessment System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .nav {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* HOME PAGE */
+        .hero {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .strands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .strand-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .strand-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .strand-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .strand-card-content {
+            padding: 1.5rem;
+        }
+
+        .strand-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+
+        .strand-card p {
+            font-size: 0.95rem;
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        /* ASSESSMENT PAGE */
+        .assessment-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s;
+        }
+
+        .assessment-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin: 1rem 0;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .option {
+            padding: 1.2rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+            font-weight: bold;
+        }
+
+        .assessment-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #d0d0d0;
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* START FORM */
+        .start-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            background: #f0f4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 2rem;
+        }
+
+        /* RESULTS PAGE */
+        .results-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .results-header h2 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .recommended-strand {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .recommended-strand h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .score-box {
+            background: #f5f7ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+
+        .score-box h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-box .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .strand-detail {
+            background: #f9f9f9;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .strand-detail h4 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-section h5 {
+            color: #764ba2;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .detail-section p, .detail-section ul {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .detail-section li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-section li:before {
+            content: "▸";
+            color: #667eea;
+            position: absolute;
+            left: 0;
+        }
+
+        /* ABOUT PAGE */
+        .about-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .about-header h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .h-cube {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .h-cube h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .feature-box {
+            background: #f5f7ff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-box h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        /* GUIDANCE PAGE */
+        .guidance-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .guidance-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .guidance-section:last-child {
+            border-bottom: none;
+        }
+
+        .guidance-section h3 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .tip-box {
+            background: #f5f7ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .contact-info {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* STRAND INFO PAGES */
+        .strand-info-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .strand-info-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .strand-info-image {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .strand-info-text h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .strand-info-header {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links {
+                gap: 0.5rem;
+                font-size: 0.85rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .strands-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .strand-card-image {
+                height: 150px;
+            }
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="logo">HHH (H³) - Strand Assessment</div>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')">Home</a></li>
+                <li><a onclick="showPage('about')">About HHH</a></li>
+                <li><a onclick="showPage('assessment')">Assessment</a></li>
+                <li><a onclick="showPage('guidance')">Guidance</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- HOME PAGE -->
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>HHH (H³)</h1>
+                <p>Human • High-Performance • Holistic</p>
+                <p style="font-size: 1rem; opacity: 0.9;">Discover your ideal Senior High School strand through intelligent assessment</p>
+                <button class="cta-button" onclick="showPage('assessment')">Start Assessment</button>
+            </div>
+
+            <div class="strands-grid">
+                <div class="strand-card" onclick="showPage('stem')">
+                    <img class="strand-card-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad)'/%3E%3Ctext x='200' y='100' font-size='60' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'%3E⚛️%3C/text%3E%3C/svg%3E" alt="STEM">
+                    <div class="strand-card-content">
+                        <h3>STEM</h3>
+                        <p>Science, Technology, Engineering & Mathematics - For those who love problem-solving and innovation</p>
+                    </div>
+                </div>
+
+                <div class="strand-card" onclick="showPage('humss')">
+                    <img class="strand-card-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad)'/%3E%3Ctext x='200' y='100' font-size='60' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'%3E📚%3C/text%3E%3C/svg%3E" alt="HUMSS">
+                    <div class="strand-card-content">
+                        <h3>HUMSS</h3>
+                        <p>Humanities & Social Sciences - For critical thinkers and communication enthusiasts</p>
+                    </div>
+                </div>
+
+                <div class="strand-card" onclick="showPage('abm')">
+                    <img class="strand-card-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad)'/%3E%3Ctext x='200' y='100' font-size='60' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'%3E💼%3C/text%3E%3C/svg%3E" alt="ABM">
+                    <div class="strand-card-content">
+                        <h3>ABM</h3>
+                        <p>Accountancy, Business & Management - For ambitious leaders and entrepreneurs</p>
+                    </div>
+                </div>
+
+                <div class="strand-card" onclick="showPage('tvl')">
+                    <img class="strand-card-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad)'/%3E%3Ctext x='200' y='100' font-size='60' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'%3E🔧%3C/text%3E%3C/svg%3E" alt="TVL">
+                    <div class="strand-card-content">
+                        <h3>TVL</h3>
+                        <p>Technical-Vocational Livelihood - For practical learners and skilled professionals</p>
+                    </div>
+                </div>
+
+                <div class="strand-card" onclick="showPage('gas')">
+                    <img class="strand-card-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='200' fill='url(%23grad)'/%3E%3Ctext x='200' y='100' font-size='60' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='middle'%3E🎓%3C/text%3E%3C/svg%3E" alt="GAS">
+                    <div class="strand-card-content">
+                        <h3>GAS</h3>
+                        <p>General Academic Strand - For well-rounded explorers with diverse interests</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABOUT PAGE -->
+        <div id="about" class="page">
+            <div class="about-container">
+                <div class="about-header">
+                    <h2>About HHH (H³)</h2>
+                    <p>Understanding the Three Dimensions of Excellence</p>
+                </div>
+
+                <div class="h-cube">
+                    <h3>H³ Cube Philosophy</h3>
+                    <p style="margin: 1rem 0;">Just like a cube has three dimensions (length, width, height) that work together to create a solid volume, our system is built on three interconnected pillars:</p>
+                    <p><strong>🧑 Holistic</strong> - Complete understanding of your interests, strengths, and aspirations</p>
+                    <p><strong>👥 Human</strong> - Student-centered approach focused on your unique journey</p>
+                    <p><strong>⚡ High-Performance</strong> - Data-driven recommendations aligned with excellence</p>
+                </div>
+
+                <h3 style="color: #667eea; margin-top: 2rem;">System Features</h3>
+                <div class="features-grid">
+                    <div class="feature-box">
+                        <h4>📝 Interactive Assessment</h4>
+                        <p>10 scenario-based questions that reflect real-world decision-making</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🎯 Smart Evaluation</h4>
+                        <p>Intelligent scoring system that matches your profile to the best strand</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>📊 Detailed Insights</h4>
+                        <p>Comprehensive results with career paths and academic programs</p>
+                    </div>
+                    <div class="feature-box">
+                        <h4>🛠️ Guidance Support</h4>
+                        <p>Resources to help you succeed in your chosen strand</p>
+                    </div>
+                </div>
+
+                <h3 style="color: #667eea; margin-top: 2rem;">Why Choose HHH?</h3>
+                <p style="line-height: 1.8; color: #666; margin-bottom: 1rem;">
+                    HHH is not just an assessment tool—it's your guide to making one of the most important decisions in your academic life. By combining intelligent algorithms with deep understanding of the Philippine SHS system, we help you discover the strand that truly aligns with who you are and where you want to go.
+                </p>
+                <p style="line-height: 1.8; color: #666;">
+                    Whether you're undecided, exploratory, or confident about your choice, HHH provides the insights and support you need to make an informed decision about your Senior High School journey.
+                </p>
+            </div>
+        </div>
+
+        <!-- ASSESSMENT PAGE -->
+        <div id="assessment" class="page">
+            <div class="assessment-container">
+                <div id="startForm" class="start-form">
+                    <div class="icon">🚀</div>
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Ready to Discover Your Path?</h3>
+                    <p style="color: #666; margin-bottom: 2rem;">This assessment consists of 10 scenario-based questions that will help match you with the ideal SHS strand.</p>
+                    <form onsubmit="startAssessment(event)">
+                        <div class="form-group">
+                            <label>Enter your full name</label>
+                            <input type="text" id="studentName" placeholder="e.g. Juan Dela Cruz" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Begin Assessment</button>
+                    </form>
+                </div>
+
+                <div id="assessmentContent" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+
+                    <div class="assessment-header">
+                        <div class="question-number" id="questionNumber"></div>
+                        <div class="question-text" id="questionText"></div>
+                    </div>
+
+                    <div class="options" id="optionsContainer"></div>
+
+                    <div class="assessment-buttons">
+                        <button class="btn btn-secondary" id="backBtn" onclick="previousQuestion()" disabled>← Back</button>
+                        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS PAGE -->
+        <div id="results" class="page">
+            <div class="results-container">
+                <div class="results-header">
+                    <h2>Your Assessment Results</h2>
+                    <p id="studentNameDisplay"></p>
+                </div>
+
+                <div class="recommended-strand">
+                    <h3>🎯 Your Recommended Strand</h3>
+                    <div style="font-size: 2.5rem; font-weight: bold; margin: 1rem 0;" id="recommendedStrandName"></div>
+                    <p id="recommendedStrandMatch"></p>
+                </div>
+
+                <div class="scores-grid" id="scoresGrid"></div>
+
+                <div class="strand-detail" id="strandDetailContainer"></div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-primary" onclick="showPage('home')" style="width: 200px;">Back to Home</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STRAND INFO PAGES -->
+        <!-- STEM -->
+        <div id="stem" class="page">
+            <div class="strand-info-container">
+                <div class="strand-info-header">
+                    <div>
+                        <h2 style="margin-bottom: 1rem;">⚛️ STEM</h2>
+                        <p style="color: #666; line-height: 1.8;">Science, Technology, Engineering, and Mathematics</p>
+                    </div>
+                    <img class="strand-info-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Ctext x='200' y='150' font-size='120' text-anchor='middle' dominant-baseline='middle'%3E⚛️🔬🔭💻%3C/text%3E%3C/svg%3E" alt="STEM">
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Overview</h3>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 1rem;">
+                        STEM is designed for students who are curious about how the world works and want to solve complex problems using science, technology, engineering, and mathematics. This strand provides a strong foundation in physics, chemistry, biology, and advanced mathematics.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="detail-section">
+                        <h5>Core Subjects</h5>
+                        <ul>
+                            <li>General Chemistry 1 & 2</li>
+                            <li>General Physics 1 & 2</li>
+                            <li>Biology 1 & 2</li>
+                            <li>Calculus & Precalculus</li>
+                            <li>Statistics & Probability</li>
+                            <li>Practical Research</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h5>Bachelor's Degree Programs</h5>
+                        <ul>
+                            <li>Bachelor of Science in Engineering (All fields)</li>
+                            <li>Bachelor of Science in Computer Science</li>
+                            <li>Bachelor of Science in Information Technology</li>
+                            <li>Bachelor of Science in Medicine</li>
+                            <li>Bachelor of Science in Pharmacy</li>
+                            <li>Bachelor of Science in Nursing</li>
+                            <li>Bachelor of Science in Architecture</li>
+                            <li>Bachelor of Science in Chemistry</li>
+                            <li>Bachelor of Science in Physics</li>
+                            <li>Bachelor of Science in Biology</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h5>Future Occupations</h5>
+                    <ul>
+                        <li>Software Engineer/Developer (₱70,000+/month)</li>
+                        <li>Mechanical Engineer (₱48,000-63,000/month)</li>
+                        <li>Civil Engineer</li>
+                        <li>Electrical Engineer</li>
+                        <li>Medical Doctor (₱50,000-57,000/month)</li>
+                        <li>Dentist</li>
+                        <li>Pharmacist</li>
+                        <li>Nurse / Healthcare Professional</li>
+                        <li>Data Scientist</li>
+                        <li>Architect</li>
+                        <li>Biologist / Researcher</li>
+                        <li>IT Systems Administrator</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-secondary" onclick="showPage('home')" style="margin-top: 2rem;">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- HUMSS -->
+        <div id="humss" class="page">
+            <div class="strand-info-container">
+                <div class="strand-info-header">
+                    <div>
+                        <h2 style="margin-bottom: 1rem;">📚 HUMSS</h2>
+                        <p style="color: #666; line-height: 1.8;">Humanities and Social Sciences</p>
+                    </div>
+                    <img class="strand-info-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Ctext x='200' y='150' font-size='120' text-anchor='middle' dominant-baseline='middle'%3E📚✍️🎭🌍%3C/text%3E%3C/svg%3E" alt="HUMSS">
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Overview</h3>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 1rem;">
+                        HUMSS is perfect for students who are passionate about understanding people, societies, and cultures. This strand develops critical thinking, communication, and analytical skills through the study of literature, history, sociology, psychology, and political science.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="detail-section">
+                        <h5>Core Subjects</h5>
+                        <ul>
+                            <li>Philippine Literature</li>
+                            <li>World Literature</li>
+                            <li>Philippine History</li>
+                            <li>World History</li>
+                            <li>Filipino Language</li>
+                            <li>Psychology</li>
+                            <li>Sociology</li>
+                            <li>Political Science</li>
+                            <li>Economics</li>
+                            <li>Research Methods</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h5>Bachelor's Degree Programs</h5>
+                        <ul>
+                            <li>Bachelor of Arts in Liberal Arts</li>
+                            <li>Bachelor of Arts in Communication</li>
+                            <li>Bachelor of Arts in Journalism</li>
+                            <li>Bachelor of Laws (Juris Doctor)</li>
+                            <li>Bachelor of Arts in Psychology</li>
+                            <li>Bachelor of Arts in Political Science</li>
+                            <li>Bachelor of Arts in Sociology</li>
+                            <li>Bachelor of Arts in Education</li>
+                            <li>Bachelor of Arts in English</li>
+                            <li>Bachelor of Arts in Filipino</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h5>Future Occupations</h5>
+                    <ul>
+                        <li>Lawyer / Attorney</li>
+                        <li>Journalist / News Reporter</li>
+                        <li>Writer / Author</li>
+                        <li>Teacher / Professor</li>
+                        <li>Psychologist / Counselor</li>
+                        <li>Social Worker</li>
+                        <li>Diplomat / Government Official</li>
+                        <li>Public Relations Officer</li>
+                        <li>Marketing Manager</li>
+                        <li>Human Resources Manager</li>
+                        <li>Advertising Executive</li>
+                        <li>Research Specialist</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-secondary" onclick="showPage('home')" style="margin-top: 2rem;">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- ABM -->
+        <div id="abm" class="page">
+            <div class="strand-info-container">
+                <div class="strand-info-header">
+                    <div>
+                        <h2 style="margin-bottom: 1rem;">💼 ABM</h2>
+                        <p style="color: #666; line-height: 1.8;">Accountancy, Business, and Management</p>
+                    </div>
+                    <img class="strand-info-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Ctext x='200' y='150' font-size='120' text-anchor='middle' dominant-baseline='middle'%3E💼📊💰📈%3C/text%3E%3C/svg%3E" alt="ABM">
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Overview</h3>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 1rem;">
+                        ABM is ideal for students who love business, finance, and numbers. This strand teaches you the fundamentals of accounting, business management, entrepreneurship, and corporate operations, preparing you for leadership roles in the business world.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="detail-section">
+                        <h5>Core Subjects</h5>
+                        <ul>
+                            <li>Fundamentals of Accountancy</li>
+                            <li>Business Math</li>
+                            <li>Economics</li>
+                            <li>Principles of Marketing</li>
+                            <li>Organization & Management</li>
+                            <li>Financial Management</li>
+                            <li>Business Ethics</li>
+                            <li>Introduction to Entrepreneurship</li>
+                            <li>Statistics & Probability</li>
+                            <li>Information Management</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h5>Bachelor's Degree Programs</h5>
+                        <ul>
+                            <li>Bachelor of Science in Accountancy</li>
+                            <li>Bachelor of Science in Business Administration</li>
+                            <li>Bachelor of Science in Hospitality Management</li>
+                            <li>Bachelor of Science in Tourism Management</li>
+                            <li>Bachelor of Science in Entrepreneurship</li>
+                            <li>Bachelor of Science in Management Accounting</li>
+                            <li>Bachelor of Science in Marketing Management</li>
+                            <li>Bachelor of Science in Human Resource Management</li>
+                            <li>Bachelor of Science in Finance</li>
+                            <li>Bachelor of Science in Real Estate Management</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h5>Future Occupations</h5>
+                    <ul>
+                        <li>Accountant / Certified Public Accountant</li>
+                        <li>Financial Analyst</li>
+                        <li>Business Manager</li>
+                        <li>Marketing Manager</li>
+                        <li>Sales Manager</li>
+                        <li>Entrepreneur / Business Owner</li>
+                        <li>Auditor (Average: ₱233,949/year)</li>
+                        <li>Human Resources Manager</li>
+                        <li>Financial Advisor</li>
+                        <li>Investment Analyst</li>
+                        <li>Hotel Manager</li>
+                        <li>Retail Manager</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-secondary" onclick="showPage('home')" style="margin-top: 2rem;">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- TVL -->
+        <div id="tvl" class="page">
+            <div class="strand-info-container">
+                <div class="strand-info-header">
+                    <div>
+                        <h2 style="margin-bottom: 1rem;">🔧 TVL</h2>
+                        <p style="color: #666; line-height: 1.8;">Technical-Vocational Livelihood</p>
+                    </div>
+                    <img class="strand-info-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Ctext x='200' y='150' font-size='120' text-anchor='middle' dominant-baseline='middle'%3E🔧⚙️🛠️👨‍🔧%3C/text%3E%3C/svg%3E" alt="TVL">
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Overview</h3>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 1rem;">
+                        TVL is perfect for hands-on learners who want to develop practical, job-ready skills immediately. This strand offers training in various fields and provides TESDA certifications, enabling graduates to enter the workforce or pursue higher education with valuable practical experience.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="detail-section">
+                        <h5>Specializations</h5>
+                        <ul>
+                            <li>Information & Communication Technology (ICT)</li>
+                            <li>Home Economics (HE)</li>
+                            <li>Industrial Arts (IA)</li>
+                            <li>Agri-Fishery Arts (AFA)</li>
+                            <li>Computer Programming</li>
+                            <li>Cookery & Baking</li>
+                            <li>Caregiving</li>
+                            <li>Dressmaking</li>
+                            <li>Electronics</li>
+                            <li>Welding</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h5>Bachelor's Degree Programs</h5>
+                        <ul>
+                            <li>Bachelor of Science in Computer Science</li>
+                            <li>Bachelor of Science in Information Technology</li>
+                            <li>Bachelor of Science in Engineering Technology</li>
+                            <li>Bachelor of Science in Hospitality Management</li>
+                            <li>Bachelor of Science in Tourism Management</li>
+                            <li>Bachelor of Science in Agriculture</li>
+                            <li>Bachelor of Science in Culinary Arts</li>
+                            <li>Bachelor of Science in Fashion Design</li>
+                            <li>Bachelor of Science in Nursing (Healthcare)</li>
+                            <li>Bachelor of Arts in Technical Education</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h5>Future Occupations</h5>
+                    <ul>
+                        <li>Web Developer / Programmer</li>
+                        <li>Data Encoder</li>
+                        <li>Graphic Designer</li>
+                        <li>Systems Analyst</li>
+                        <li>Network Administrator</li>
+                        <li>Chef / Cook</li>
+                        <li>Baker / Pastry Chef</li>
+                        <li>Caregiver / Healthcare Worker</li>
+                        <li>Dressmaker / Fashion Designer</li>
+                        <li>Electrician</li>
+                        <li>Welder</li>
+                        <li>Automotive Mechanic</li>
+                        <li>Agricultural Technician</li>
+                        <li>OFW (Overseas Foreign Worker)</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-secondary" onclick="showPage('home')" style="margin-top: 2rem;">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- GAS -->
+        <div id="gas" class="page">
+            <div class="strand-info-container">
+                <div class="strand-info-header">
+                    <div>
+                        <h2 style="margin-bottom: 1rem;">🎓 GAS</h2>
+                        <p style="color: #666; line-height: 1.8;">General Academic Strand</p>
+                    </div>
+                    <img class="strand-info-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23667eea;stop-opacity:1'/%3E%3Cstop offset='100%25' style='stop-color:%23764ba2;stop-opacity:1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Ctext x='200' y='150' font-size='120' text-anchor='middle' dominant-baseline='middle'%3E🎓🌟📖💡%3C/text%3E%3C/svg%3E" alt="GAS">
+                </div>
+
+                <div style="margin: 2rem 0;">
+                    <h3 style="color: #667eea; margin-bottom: 1rem;">Overview</h3>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 1rem;">
+                        GAS is ideal for students who are still exploring their interests or want a well-rounded education. This strand combines subjects from HUMSS, STEM, and ABM, allowing you to discover where your true passions lie before committing to a specific college degree.
+                    </p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div class="detail-section">
+                        <h5>Core Subjects (Mix of All Strands)</h5>
+                        <ul>
+                            <li>Filipino Language & Literature</li>
+                            <li>English Language & Literature</li>
+                            <li>World History</li>
+                            <li>Philippine Politics & Governance</li>
+                            <li>General Chemistry</li>
+                            <li>General Biology</li>
+                            <li>General Mathematics</li>
+                            <li>Introduction to Economics</li>
+                            <li>Psychology</li>
+                            <li>Organization & Management</li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-section">
+                        <h5>Bachelor's Degree Programs</h5>
+                        <ul>
+                            <li>Bachelor of Arts in Liberal Arts</li>
+                            <li>Bachelor of Science in Education (Any field)</li>
+                            <li>Bachelor of Science in Psychology</li>
+                            <li>Bachelor of Arts in Communication</li>
+                            <li>Bachelor of Science in Business Administration</li>
+                            <li>Bachelor of Science in Nursing</li>
+                            <li>Bachelor of Arts in Political Science</li>
+                            <li>Bachelor of Science in Social Work</li>
+                            <li>Bachelor of Arts in Interior Design</li>
+                            <li>Bachelor of Science in Disaster Management</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h5>Future Occupations</h5>
+                    <ul>
+                        <li>Teacher (Any subject area)</li>
+                        <li>Interior Designer</li>
+                        <li>Psychologist / Counselor</li>
+                        <li>Human Resources Officer</li>
+                        <li>Multimedia Artist</li>
+                        <li>Government Official / Civil Service</li>
+                        <li>Disaster Management Officer</li>
+                        <li>Research Specialist</li>
+                        <li>Nurse / Healthcare Worker</li>
+                        <li>Social Worker</li>
+                        <li>Journalist</li>
+                        <li>Entrepreneur / Business Owner</li>
+                    </ul>
+                </div>
+
+                <button class="btn btn-secondary" onclick="showPage('home')" style="margin-top: 2rem;">Back to Home</button>
+            </div>
+        </div>
+
+        <!-- GUIDANCE PAGE -->
+        <div id="guidance" class="page">
+            <div class="guidance-container">
+                <h2 style="color: #667eea; margin-bottom: 1rem; text-align: center;">Guidance & Support Resources</h2>
+
+                <div class="guidance-section">
+                    <h3>📚 Study Tips for Success</h3>
+                    <div class="tip-box">
+                        <strong>Create a Study Schedule</strong> - Allocate specific time for each subject. Consistency is more important than intensity.
+                    </div>
+                    <div class="tip-box">
+                        <strong>Form Study Groups</strong> - Collaborate with classmates. Teaching others reinforces your own understanding.
+                    </div>
+                    <div class="tip-box">
+                        <strong>Take Active Notes</strong> - Don't just copy. Summarize in your own words and ask questions.
+                    </div>
+                    <div class="tip-box">
+                        <strong>Practice Regularly</strong> - Especially for STEM subjects. Problem-solving requires hands-on practice.
+                    </div>
+                    <div class="tip-box">
+                        <strong>Seek Help Early</strong> - Don't wait until you're struggling. Talk to your teacher as soon as you're confused.
+                    </div>
+                </div>
+
+                <div class="guidance-section">
+                    <h3>🎯 Academic Preparation</h3>
+                    <div class="tip-box">
+                        <strong>For STEM Students:</strong> Master algebra and basic calculus concepts. Lab work and problem sets are essential.
+                    </div>
+                    <div class="tip-box">
+                        <strong>For HUMSS Students:</strong> Develop reading comprehension and critical thinking. Practice writing essays and analyzing texts.
+                    </div>
+                    <div class="tip-box">
+                        <strong>For ABM Students:</strong> Build strong quantitative skills. Practice accounting, business math, and case studies.
+                    </div>
+                    <div class="tip-box">
+                        <strong>For TVL Students:</strong> Develop technical proficiency. Hands-on practice and certifications are key to employability.
+                    </div>
+                    <div class="tip-box">
+                        <strong>For GAS Students:</strong> Maintain balanced learning across subjects. Use this year to explore and discover your strengths.
+                    </div>
+                </div>
+
+                <div class="guidance-section">
+                    <h3>🚀 Career Exploration</h3>
+                    <p style="color: #666; line-height: 1.8; margin-bottom: 1rem;">
+                        Don't wait until college to explore career options. Attend career fairs, research job descriptions, and interview professionals in fields that interest you. Many schools offer internship opportunities—take advantage of them!
+                    </p>
+                    <div class="tip-box">
+                        <strong>Research Colleges:</strong> Look into universities offering your strand of choice. Compare programs, facilities, and career placements.
+                    </div>
+                    <div class="tip-box">
+                        <strong>Build Your Portfolio:</strong> Depending on your strand, start building projects, writing samples, or a portfolio of technical work.
+                    </div>
+                    <div class="tip-box">
+                        <strong>Develop Soft Skills:</strong> Leadership, communication, teamwork, and problem-solving are valued by all employers.
+                    </div>
+                </div>
+
+                <div class="guidance-section">
+                    <h3>📞 Support Services</h3>
+                    <div class="contact-info">
+                        <h4 style="margin-bottom: 1rem;">🏫 School Guidance Office</h4>
+                        <p style="margin-bottom: 0.5rem;">Need academic counseling? Your school's guidance counselors are here to help.</p>
+                        <p style="margin-bottom: 1rem;"><strong>Ask about:</strong> Strand selection, academic planning, personal concerns</p>
+                        <p style="opacity: 0.9;">Visit your guidance office during office hours or request an appointment.</p>
+                    </div>
+
+                    <div style="background: #f5f7ff; padding: 2rem; border-radius: 10px; margin-top: 1rem; text-align: center;">
+                        <h4 style="color: #667eea; margin-bottom: 1rem;">💬 Need More Help?</h4>
+                        <p style="color: #666; margin-bottom: 1rem;">
+                            Remember, choosing a strand is not a final decision—it's a stepping stone. You can always adjust your path based on your experiences and discoveries.
+                        </p>
+                        <p style="color: #666;">
+                            Speak with your teachers, guidance counselor, parents, and mentors as you make this important choice.
+                        </p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="showPage('home')">Back to Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS = [
+            {
+                id: 1,
+                text: "Your school is organizing a fundraising bazaar. Which role do you naturally volunteer for?",
+                options: [
+                    { label: "Managing the budget, pricing the items, and tracking profits.", value: "ABM" },
+                    { label: "Designing the booths, setting up the sound system, or cooking the food.", value: "TVL" },
+                    { label: "Promoting the event, writing the script, and hosting the program.", value: "HUMSS" },
+                    { label: "Calculating the logistics, space requirements, and energy consumption.", value: "STEM" },
+                    { label: "Helping out in various committees and coordinating between teams.", value: "GAS" }
+                ]
+            },
+            {
+                id: 2,
+                text: "You encounter a broken appliance at home. What is your immediate reaction?",
+                options: [
+                    { label: "I try to open it up and see if I can fix the wiring or parts myself.", value: "TVL" },
+                    { label: "I look up the manual or research the scientific principle behind how it works.", value: "STEM" },
+                    { label: "I check if it's still under warranty or if buying a new one is more cost-effective.", value: "ABM" },
+                    { label: "I ask family members how they broke it and discuss how to prevent it next time.", value: "HUMSS" },
+                    { label: "I try a few random fixes, and if they don't work, I call a professional.", value: "GAS" }
+                ]
+            },
+            {
+                id: 3,
+                text: "If you could start your own YouTube channel, what would the content be?",
+                options: [
+                    { label: "Science experiments, coding tutorials, or tech reviews.", value: "STEM" },
+                    { label: "Social commentaries, history deep-dives, or short films.", value: "HUMSS" },
+                    { label: "Financial tips, entrepreneurship vlogs, or investment advice.", value: "ABM" },
+                    { label: "DIY crafts, cooking demos, or computer building guides.", value: "TVL" },
+                    { label: "A mix of daily vlogs, challenges, and random topic explorations.", value: "GAS" }
+                ]
+            },
+            {
+                id: 4,
+                text: "You are given a free week to learn any new skill. What do you choose?",
+                options: [
+                    { label: "Learning a new language or studying psychology.", value: "HUMSS" },
+                    { label: "Learning how to invest in the stock market or start a dropshipping store.", value: "ABM" },
+                    { label: "Learning how to code an app or understand robotics.", value: "STEM" },
+                    { label: "Learning how to bake, weld, or fix cars.", value: "TVL" },
+                    { label: "Trying out a bit of everything—maybe a day of coding, a day of baking, etc.", value: "GAS" }
+                ]
+            },
+            {
+                id: 5,
+                text: "When buying a new phone, what matters most to you?",
+                options: [
+                    { label: "The technical specifications: processor speed, camera sensor size, battery tech.", value: "STEM" },
+                    { label: "The brand value, resale price, and if it's a good deal for the money.", value: "ABM" },
+                    { label: "How it helps me connect with people and express myself on social media.", value: "HUMSS" },
+                    { label: "If it's durable, easy to repair, and has practical features I can use.", value: "TVL" },
+                    { label: "I read reviews from different perspectives and choose the best all-rounder.", value: "GAS" }
+                ]
+            },
+            {
+                id: 6,
+                text: "Your community is facing a waste management problem. What solution do you propose?",
+                options: [
+                    { label: "Design a new machine that automatically sorts trash.", value: "STEM" },
+                    { label: "Create a business model where people get paid to recycle.", value: "ABM" },
+                    { label: "Launch a campaign to educate people and change their behavior.", value: "HUMSS" },
+                    { label: "Build recycled bins and organize a community cleanup drive.", value: "TVL" },
+                    { label: "Organize a town hall meeting to gather different ideas and form a plan.", value: "GAS" }
+                ]
+            },
+            {
+                id: 7,
+                text: "Which type of assignment do you find least stressful?",
+                options: [
+                    { label: "Solving math problems or lab reports.", value: "STEM" },
+                    { label: "Creating a business plan or marketing pitch.", value: "ABM" },
+                    { label: "Writing an essay or delivering a speech.", value: "HUMSS" },
+                    { label: "Creating a physical project, cooking, or drawing.", value: "TVL" },
+                    { label: "Group projects where I can contribute in different ways.", value: "GAS" }
+                ]
+            },
+            {
+                id: 8,
+                text: "What is your dream work environment?",
+                options: [
+                    { label: "A corporate office or boardroom where deals are made.", value: "ABM" },
+                    { label: "A laboratory, research center, or tech startup.", value: "STEM" },
+                    { label: "A courtroom, newsroom, or diplomatic office.", value: "HUMSS" },
+                    { label: "A workshop, kitchen, or field site where I can work with my hands.", value: "TVL" },
+                    { label: "Somewhere dynamic where the tasks change every day.", value: "GAS" }
+                ]
+            },
+            {
+                id: 9,
+                text: "A friend comes to you for advice. What do you usually help them with?",
+                options: [
+                    { label: "Helping them budget their allowance or start a small side hustle.", value: "ABM" },
+                    { label: "Explaining a difficult math concept or fixing their laptop.", value: "STEM" },
+                    { label: "Listening to their personal problems and offering emotional support.", value: "HUMSS" },
+                    { label: "Helping them fix their bike or sew a button on their shirt.", value: "TVL" },
+                    { label: "Giving them a balanced perspective on their situation.", value: "GAS" }
+                ]
+            },
+            {
+                id: 10,
+                text: "How do you prefer to make decisions?",
+                options: [
+                    { label: "Based on data, logic, and proven facts.", value: "STEM" },
+                    { label: "Based on cost-benefit analysis and efficiency.", value: "ABM" },
+                    { label: "Based on how it affects people and ethical considerations.", value: "HUMSS" },
+                    { label: "Based on what is practical and works in the real world.", value: "TVL" },
+                    { label: "Based on a mix of intuition and gathering advice from others.", value: "GAS" }
+                ]
+            }
+        ];
+
+        const STRAND_INFO = {
+            STEM: {
+                name: "STEM",
+                title: "Science, Technology, Engineering & Mathematics",
+                match: "Strong alignment with analytical and technical interests",
+                description: "Perfect for those who love solving complex problems through science and technology."
+            },
+            HUMSS: {
+                name: "HUMSS",
+                title: "Humanities and Social Sciences",
+                match: "Strong alignment with communication and people-focused interests",
+                description: "Ideal for critical thinkers and those passionate about understanding society."
+            },
+            ABM: {
+                name: "ABM",
+                title: "Accountancy, Business & Management",
+                match: "Strong alignment with business and financial interests",
+                description: "Perfect for future leaders, entrepreneurs, and financial professionals."
+            },
+            TVL: {
+                name: "TVL",
+                title: "Technical-Vocational Livelihood",
+                match: "Strong alignment with hands-on and practical learning",
+                description: "Ideal for those who learn best by doing and want job-ready skills."
+            },
+            GAS: {
+                name: "GAS",
+                title: "General Academic Strand",
+                match: "Well-rounded interests across multiple disciplines",
+                description: "Perfect for explorers who want a balanced education before specializing."
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = {};
+        let studentName = "";
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function startAssessment(e) {
+            e.preventDefault();
+            studentName = document.getElementById('studentName').value;
+            if (studentName.trim()) {
+                answers = {};
+                currentQuestion = 0;
+                document.getElementById('startForm').style.display = 'none';
+                document.getElementById('assessmentContent').style.display = 'block';
+                displayQuestion();
+            }
+        }
+
+        function displayQuestion() {
+            const question = QUESTIONS[currentQuestion];
+            const progress = ((currentQuestion) / QUESTIONS.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${QUESTIONS.length}`;
+            document.getElementById('questionText').textContent = question.text;
+
+            const optionsHtml = question.options.map((option, idx) => `
+                <div class="option ${answers[question.id] === option.value ? 'selected' : ''}" 
+                     onclick="selectAnswer('${question.id}', '${option.value}')">
+                    ${option.label}
+                </div>
+            `).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+
+            document.getElementById('backBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').disabled = !answers[question.id];
+        }
+
+        function selectAnswer(questionId, value) {
+            answers[questionId] = value;
+            displayQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < QUESTIONS.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                submitAssessment();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function submitAssessment() {
+            const scores = { STEM: 0, ABM: 0, HUMSS: 0, TVL: 0, GAS: 0 };
+            Object.values(answers).forEach(strand => {
+                if (scores[strand] !== undefined) scores[strand]++;
+            });
+
+            let maxScore = -1;
+            let recommended = "GAS";
+            for (const [strand, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    recommended = strand;
+                }
+            }
+
+            displayResults(recommended, scores);
+        }
+
+        function displayResults(recommended, scores) {
+            document.getElementById('studentNameDisplay').textContent = `Results for ${studentName}`;
+
+            const info = STRAND_INFO[recommended];
+            document.getElementById('recommendedStrandName').textContent = info.title;
+            document.getElementById('recommendedStrandMatch').textContent = info.match;
+
+            const scoresHtml = Object.entries(scores).map(([strand, score]) => `
+                <div class="score-box">
+                    <h4>${strand}</h4>
+                    <div class="score-value">${score}</div>
+                </div>
+            `).join('');
+            document.getElementById('scoresGrid').innerHTML = scoresHtml;
+
+            const detailHtml = `
+                <h4>${recommended} - ${STRAND_INFO[recommended].title}</h4>
+                <p style="color: #666; line-height: 1.8; margin-bottom: 1rem;">
+                    ${STRAND_INFO[recommended].description}
+                </p>
+                <div class="detail-section">
+                    <h5>What This Means</h5>
+                    <p>Your answers indicate a strong alignment with the ${recommended} strand. This is the academic path that best matches your interests, strengths, and learning style based on your responses.</p>
+                </div>
+                <div class="detail-section">
+                    <h5>Next Steps</h5>
+                    <ul>
+                        <li>Discuss this recommendation with your parents and guidance counselor</li>
+                        <li>Explore the strand information pages to learn about subjects and career paths</li>
+                        <li>Research colleges offering your recommended strand</li>
+                        <li>Consider internships or workshops in related fields</li>
+                        <li>Remember: This is a recommendation, not a final decision. You can discuss options with your counselor.</li>
+                    </ul>
+                </div>
+            `;
+            document.getElementById('strandDetailContainer').innerHTML = detailHtml;
+
+            showPage('results');
+        }
+    </script>
+</body>
+</html>
